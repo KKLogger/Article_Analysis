@@ -1,6 +1,8 @@
+import os
 import requests
 from bs4 import BeautifulSoup as bs
 import lxml
+PATH = os.getcwd() + "\\article_analysis\\Projects\\"
 
 
 def get_association(keyword, tokens):
@@ -40,7 +42,7 @@ def get_wordcloud(tokens):
     plt.figure(figsize=(10, 10))
     plt.imshow(wordcloud, interpolation='lanczos')
     plt.axis('off')
-    # plt.show()
+    plt.savefig(PATH+'wordcloud.jpg')
 
 
 def get_NG(tokens):
@@ -78,6 +80,7 @@ keywords = [x.text.replace('\xa0', '') for x in keywords]
 keywords = " ".join(keywords)
 search_keyword = 'mno2'
 tokens = get_tokens(highlights, abstract, keywords)
-get_NG(tokens)
+
+# get_NG(tokens)
 # rank = get_association(search_keyword, tokens)
-# get_wordcloud(tokens)
+get_wordcloud(tokens)
