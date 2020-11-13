@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>602</width>
-    <height>578</height>
+    <width>1263</width>
+    <height>904</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>50</y>
+     <y>40</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -39,10 +39,10 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>50</y>
-     <width>241</width>
-     <height>261</height>
+     <x>270</x>
+     <y>40</y>
+     <width>900</width>
+     <height>391</height>
     </rect>
    </property>
    <property name="text">
@@ -52,10 +52,10 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>300</x>
-     <y>310</y>
-     <width>261</width>
-     <height>231</height>
+     <x>270</x>
+     <y>440</y>
+     <width>900</width>
+     <height>451</height>
     </rect>
    </property>
    <property name="text">
@@ -68,7 +68,7 @@
      <x>10</x>
      <y>80</y>
      <width>256</width>
-     <height>491</height>
+     <height>631</height>
     </rect>
    </property>
    <row>
@@ -87,42 +87,56 @@
     </property>
    </column>
   </widget>
-  <widget class="QTableWidget" name="tableWidget_2">
-   <property name="geometry">
-    <rect>
-     <x>270</x>
-     <y>10</y>
-     <width>311</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <column>
-    <property name="text">
-     <string>title</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>author</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>url</string>
-    </property>
-   </column>
-  </widget>
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>40</y>
-     <width>121</width>
-     <height>31</height>
+     <x>10</x>
+     <y>720</y>
+     <width>256</width>
+     <height>161</height>
     </rect>
    </property>
    <property name="text">
     <string>ERROR</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_4">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>0</y>
+     <width>41</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Author</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>360</x>
+     <y>0</y>
+     <width>521</width>
+     <height>51</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>[Author]</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>10</y>
+     <width>118</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
    </property>
   </widget>
  </widget>

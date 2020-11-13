@@ -1,4 +1,3 @@
-from apyori import apriori
 import nltk
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -27,7 +26,7 @@ import re
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup as bs
-import networkx as nx
+
 
 headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
@@ -57,7 +56,6 @@ keywords = " ".join(keywords)
 sentence = highlights + abstract
 sentences = sentence.split('.')
 sentences = [x.strip() for x in sentences]
-
 df = pd.DataFrame(sentences, columns=['content'])
 
 nan_value = float("NaN")
@@ -98,13 +96,7 @@ stop_words.extend(new_stop_words)
 def stop_lambda(x): return [y for y in x if y not in stop_words]
 
 
-df['remove_stopword'] = df.tokens.apply(stop_lambda)
-# DF에서 빈 칸인 공백인 데이터 삭제
-df.dropna(inplace=True)
-
-idx = df[df['remove_stopword'].apply(lambda x: len(x)) == 0].index
-df = df.drop(idx)
-
+df['tokens_rmstop'] = df.tokens.apply(stop_lambda)
 
 # Perform basic lemmatization 단어를 기본형태로 변환 ex) 복수형->단수형
 # lemmatizer = WordNetLemmatizer()
@@ -122,43 +114,5 @@ df = df.drop(idx)
 # IN: Preposition or subordinating conjunction
 # JJ: Adjective
 # RB: Adverb
-
+print(df)
 # http://blog.daum.net/geoscience/1408
-# APory Alg
-result = (list(apriori(df['remove_stopword'])))
-ap_df = pd.DataFrame(result)
-ap_df['length'] = ap_df['items'].apply(lambda x: len(x))
-ap_df = ap_df[(ap_df['length'] == 2) & (ap_df['support'] >= 0.01)
-              ].sort_values(by='support', ascending=False)
-
-print(ap_df)
-
-
-# 그래프 그리기
-G = nx.Graph()
-ar = ap_df['items']
-G.add_edges_from(ar)
-
-pr = nx.pagerank(G)
-nsize = np.array([v for v in pr.values()])
-print(nsize)
-nsize = 4000 * ((nsize - min(nsize)) / (max(nsize)-min(nsize)))
-print(nsize)
-# Graph Layout
-# pos = nx.planar_layout(G)
-pos = nx.fruchterman_reingold_layout(G)
-pos = nx.spectral_layout(G)
-pos = nx.random_layout(G)
-pos = nx.shell_layout(G)
-# pos = nx.bipartite_layout(G)
-pos = nx.circular_layout(G)
-pos = nx.spring_layout(G)
-pos = nx.kamada_kawai_layout(G)
-# pos = nx.rescale_layout(G)
-
-plt.figure(figsize=(16, 12))
-plt.axis('off')
-
-nx.draw_networkx(G, font_size=16, pos=pos, node_color=list(
-    pr.values()), node_size=nsize, alpha=0.7, edge_color='.5', cmap=plt.cm.YlGn)
-plt.show()
