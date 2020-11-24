@@ -39,7 +39,7 @@ headers = {
     'sec-fetch-mode': 'navigate',
     'sec-fetch-site': 'none',
     'sec-fetch-user': '?1',
-    'upgrade-insecure-requests': "1",
+    'upgrade-insecure-requests': '1',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36',
 }
 response = requests.get(
@@ -51,29 +51,30 @@ highlights = soup.find('div', {'id': 'abs0010'}).text.replace(
 abstract = soup.find('div', {'id': 'abs0015'}).text.replace('\xa0', '')
 keywords = soup.find_all('div', {'class': 'keyword'})
 keywords = [x.text.replace('\xa0', '') for x in keywords]
-keywords = " ".join(keywords)
+keywords = ' '.join(keywords)
 
 
 sentence = highlights + abstract
 sentences = sentence.split('.')
 sentences = [x.strip() for x in sentences]
+print(sentences)
 
 df = pd.DataFrame(sentences, columns=['content'])
 
-nan_value = float("NaN")
+nan_value = float('NaN')
 # 결측값 제거
-df.replace(" ", nan_value, inplace=True)
+df.replace(' ', nan_value, inplace=True)
 df.dropna(subset=['content'], inplace=True)
 # 소문자로 통일
-# def lower_alpha(x): return re.sub(r"""\w*\d\w*""", ' ', x.lower())
+# def lower_alpha(x): return re.sub(r'''\w*\d\w*''', ' ', x.lower())
 # df['content'] = df.content.map(lower_alpha)
 
 # 특수문자 제거
-# def punc_re(x): return re.sub(r"""[\.,—“”’:;#$?%!&()_'`*""˜{|}~-]""", ' ', x)
+# def punc_re(x): return re.sub(r'''[\.,—“”’:;#$?%!&()_'`*''˜{|}~-]''', ' ', x)
 # df['content'] = df.content.map(punc_re)
 
 
-def num_re(x): return re.sub(r"""[0-9]""", '', x)
+def num_re(x): return re.sub(r'''[0-9]''', '', x)
 
 
 def short_re(tokens):
@@ -95,6 +96,7 @@ df['tokens'] = df.tokens.map(short_re)
 stop_words = stopwords.words('english')
 new_stop_words = ['said', 'say', 'The', 'the', 'mr']
 stop_words.extend(new_stop_words)
+
 def stop_lambda(x): return [y for y in x if y not in stop_words]
 
 

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1263</width>
+    <width>1194</width>
     <height>904</height>
    </rect>
   </property>
@@ -35,14 +35,17 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="text">
+    <string>dddd</string>
+   </property>
   </widget>
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>320</x>
      <y>40</y>
-     <width>900</width>
-     <height>391</height>
+     <width>800</width>
+     <height>450</height>
     </rect>
    </property>
    <property name="text">
@@ -52,14 +55,14 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>320</x>
      <y>440</y>
-     <width>900</width>
-     <height>451</height>
+     <width>800</width>
+     <height>450</height>
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>아직 한국어는 지원하지 않습니다.</string>
    </property>
   </widget>
   <widget class="QTableWidget" name="tableWidget">
@@ -67,15 +70,15 @@
     <rect>
      <x>10</x>
      <y>80</y>
-     <width>256</width>
+     <width>302</width>
      <height>631</height>
     </rect>
    </property>
-   <row>
+   <column>
     <property name="text">
      <string>rank</string>
     </property>
-   </row>
+   </column>
    <column>
     <property name="text">
      <string>title</string>
@@ -86,19 +89,6 @@
      <string>url</string>
     </property>
    </column>
-  </widget>
-  <widget class="QLabel" name="label_3">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>720</y>
-     <width>256</width>
-     <height>161</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>ERROR</string>
-   </property>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
@@ -139,7 +129,7 @@
     <number>24</number>
    </property>
   </widget>
-  <widget class="QRadioButton" name="radioButton">
+  <widget class="QRadioButton" name="radioButton_1">
    <property name="geometry">
     <rect>
      <x>110</x>
@@ -150,6 +140,12 @@
    </property>
    <property name="text">
     <string>Google</string>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
    </property>
   </widget>
   <widget class="QRadioButton" name="radioButton_2">

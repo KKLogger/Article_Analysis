@@ -1,17 +1,21 @@
-from bs4 import BeautifulSoup as bs
-import requests
+import os
 import sys
-from PyQt5.QtWidgets import *
+
+import requests
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
-import os
-from myFunc import *
+from PyQt5.QtWidgets import *
+from bs4 import BeautifulSoup as bs
 from makeImage import *
+from myFunc import *
+from nltk.tokenize import sent_tokenize
 
-PATH = os.getcwd() + '\\article_analysis\\Projects\\'
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+PATH = os.getcwd() + '\\'
 # UI파일 연결
 # 단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
-form_class = uic.loadUiType(PATH+"test.ui")[0]
+form_class = uic.loadUiType(PATH + "\\test.ui")[0]
+
 
 # 화면을 띄우는데 사용되는 Class 선언
 
@@ -24,23 +28,37 @@ class WindowClass(QMainWindow, form_class):
         self.searchBtn.clicked.connect(self.searchBtnFunction)
 
     def searchBtnFunction(self):
+        try:
+            highlights, abstract, keywords, lang = get_data()
+            tokens = get_tokens(highlights + abstract + keywords, lang)
+            sentences = sent_tokenize(highlights + abstract)
 
-        highlights, abstract, keywords,lang = get_data()
-        tokens = get_tokens(highlights, abstract, keywords,lang)
-        sentences = get_sentences(highlights, abstract)
+            search_keyword = self.keywordInput.text()
+            if self.radioButton_1.isChecked() :
+                crawl_site = 'Google'
+            elif self.radioButton_2.isChecked() :
+                crawl_site = 'Naver'
+            else:
+                print('Google 과 Naver 중 선택해주세요')
+            print(search_keyword)
+            # get_NG(tokens)
+            # rank = get_association(search_keyword, tokens)
+            return
+            get_wordcloud(tokens)
+            print(self.keywordInput.text())
+            wordcloud = QPixmap(PATH + 'wordcloud.png')
+            wordcloud = wordcloud.scaledToHeight(400)  # 사이즈가 조정
+            self.label.setPixmap(wordcloud)
+            if lang == "Eng":
+                get_NG(sentences, lang)
+                netgraph = QPixmap(PATH + 'networkgraph.png')
+                netgraph = netgraph.scaledToHeight(400)  # 사이즈가 조정
+                self.label_2.setPixmap(netgraph)
+            else:
+                pass
+        except Exception as e:
+            print(e)
 
-        search_keyword = 'mno2'
-        # get_NG(tokens)
-        # rank = get_association(search_keyword, tokens)
-        get_wordcloud(tokens)
-        print(self.keywordInput.text())
-        wordcloud = QPixmap(PATH+'wordcloud.png')
-        wordcloud = wordcloud.scaledToHeight(391)  # 사이즈가 조정
-        get_NG(sentences)
-        netgraph = QPixmap(PATH + 'networkgraph.png')
-        netgraph = netgraph.scaledToHeight(451)  # 사이즈가 조정
-        self.label.setPixmap(wordcloud)
-        self.label_2.setPixmap(netgraph)
 
 def get_data():
     headers = {
@@ -61,30 +79,31 @@ def get_data():
     soup = bs(response.text, 'html.parser')
 
     highlights = soup.find('div', {'id': 'abs0010'}).text.replace(
-        '•', '').replace('\xa0', '')
+        '•', ' ').replace('\xa0', '')
     abstract = soup.find('div', {'id': 'abs0015'}).text.replace('\xa0', '')
     keywords = soup.find_all('div', {'class': 'keyword'})
     keywords = [x.text.replace('\xa0', '') for x in keywords]
     keywords = " ".join(keywords)
-
-    text  = open('C:/Users/jlee/Downloads/미래로 가는 길.txt',encoding='euc-kr').read()
-    text.replace('\n')
-    highlights = text
-    abstract = text
-    keywords = "안녕.그래"
-    lang = 'Kor'
+    lang = "Eng"
+    # text  = open('C:/Users/jlee/Downloads/미래로 가는 길.txt',encoding='euc-kr').read()
+    # text.replace('\n','')
+    # highlights = text
+    # abstract = text
+    # keywords = "안녕.그래"
+    # lang = 'Kor'
     return highlights, abstract, keywords, lang
 
 
-# QApplication : 프로그램을 실행시켜주는 클래스
-app = QApplication(sys.argv)
+if __name__ == '__main__':
+    # QApplication : 프로그램을 실행시켜주는 클래스
+    app = QApplication(sys.argv)
 
-# WindowClass의 인스턴스 생성
-myWindow = WindowClass()
+    # WindowClass의 인스턴스 생성
+    myWindow = WindowClass()
 
-# 프로그램 화면을 보여주는 코드
-myWindow.show()
+    # 프로그램 화면을 보여주는 코드
+    myWindow.show()
 
-# 프로그램을 이벤트루프로 진입시키는(프로그램을 작동시키는) 코드
-app.exec_()
-# os.remove(PATH+'wordcloud.png')
+    # 프로그램을 이벤트루프로 진입시키는(프로그램을 작동시키는) 코드
+    app.exec_()
+    # os.remove(PATH+'wordcloud.png')

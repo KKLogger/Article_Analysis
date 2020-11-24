@@ -9,17 +9,23 @@ from apyori import apriori
 from myFunc import *
 import os
 import re
-PATH = os.getcwd() + '\\article_analysis\\Projects\\'
+import matplotlib.font_manager as fm
+font_name = fm.FontProperties(fname='c:/Windows/Fonts/malgun.ttf').get_name()
+plt.rc('font', family=font_name)
+PATH = os.getcwd() + '\\'
+
+
 def get_wordcloud(tokens):
-    wordcloud = WordCloud(background_color='white').generate(" ".join(tokens))
-    plt.figure(figsize=(10, 10))
+    # wordcloud = WordCloud(background_color='white').generate(" ".join(tokens))
+    wordcloud = WordCloud(font_path='c:/Windows/Fonts/malgun.ttf',
+                          background_color='white', width=1600, height=900, font_step=10, max_words=100).generate(" ".join(tokens))
+    plt.figure(figsize=(16, 9))
     plt.imshow(wordcloud, interpolation='lanczos')
     plt.axis('off')
     plt.savefig(PATH+'wordcloud.png', bbox_inches='tight')
 
 
-
-def get_NG(sentences):
+def get_NG(sentences, lang):
 
     df = pd.DataFrame(sentences, columns=['content'])
     nan_value = float("NaN")
@@ -46,14 +52,18 @@ def get_NG(sentences):
     df['content'] = df.content.map(num_re)
 
     # 각 문장을 문장별로 토크나이징
+    df['tokens'] = [get_tokens(x, lang) for x in df['content']]
 
-    df['tokens'] = df.content.map(word_tokenize)
     df['tokens'] = df.tokens.map(short_re)
 
     # remove stop words in tokens
-    stop_words = stopwords.words('english')
-    new_stop_words = ['said', 'say', 'The', 'the', 'mr']
-    stop_words.extend(new_stop_words)
+    if lang == 'Eng':
+        stop_words = stopwords.words('english')
+        new_stop_words = ['said', 'say', 'The', 'the', 'mr']
+        stop_words.extend(new_stop_words)
+    elif lang == 'Kor':
+        stop_words = get_kr_stopwords()
+
     def stop_lambda(x): return [y for y in x if y not in stop_words]
 
     df['remove_stopword'] = df.tokens.apply(stop_lambda)
@@ -81,7 +91,9 @@ def get_NG(sentences):
 
     # http://blog.daum.net/geoscience/1408
     # APory Alg
+
     result = (list(apriori(df['remove_stopword'])))
+
     ap_df = pd.DataFrame(result)
     ap_df['length'] = ap_df['items'].apply(lambda x: len(x))
     ap_df = ap_df[(ap_df['length'] == 2) & (ap_df['support'] >= 0.01)
@@ -94,7 +106,7 @@ def get_NG(sentences):
 
     pr = nx.pagerank(G)
     nsize = np.array([v for v in pr.values()])
-    nsize = 4000 * ((nsize - min(nsize)) / (max(nsize)-min(nsize)))
+    nsize = 7000 * ((nsize - min(nsize)) / (max(nsize)-min(nsize)))
     # Graph Layout
     # pos = nx.planar_layout(G)
     pos = nx.fruchterman_reingold_layout(G)
@@ -107,10 +119,9 @@ def get_NG(sentences):
     pos = nx.kamada_kawai_layout(G)
     # pos = nx.rescale_layout(G)
 
-    plt.figure(figsize=(16, 12))
+    plt.figure(figsize=(16, 9), dpi=100)
     plt.axis('off')
 
-    nx.draw_networkx(G, font_size=16, pos=pos, node_color=list(
-        pr.values()), node_size=nsize, alpha=0.7, edge_color='.5', cmap=plt.cm.YlGn)
+    nx.draw_networkx(G, font_size=20, font_weight="bold", pos=pos, node_color=list(
+        pr.values()), node_size=nsize, alpha=0.7, cmap=plt.cm.GnBu, font_family=font_name, width=1.5)
     plt.savefig(PATH+'networkgraph.png', bbox_inches='tight')
-
