@@ -57,11 +57,11 @@ def get_NG(sentences, lang):
     df['tokens'] = df.tokens.map(short_re)
 
     # remove stop words in tokens
-    if lang == 'Eng':
+    if lang == 'eng':
         stop_words = stopwords.words('english')
         new_stop_words = ['said', 'say', 'The', 'the', 'mr']
         stop_words.extend(new_stop_words)
-    elif lang == 'Kor':
+    elif lang == 'kor':
         stop_words = get_kr_stopwords()
 
     def stop_lambda(x): return [y for y in x if y not in stop_words]

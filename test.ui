@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1194</width>
+    <width>1200</width>
     <height>904</height>
    </rect>
   </property>
@@ -64,31 +64,6 @@
    <property name="text">
     <string>아직 한국어는 지원하지 않습니다.</string>
    </property>
-  </widget>
-  <widget class="QTableWidget" name="tableWidget">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>80</y>
-     <width>302</width>
-     <height>631</height>
-    </rect>
-   </property>
-   <column>
-    <property name="text">
-     <string>rank</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>title</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>url</string>
-    </property>
-   </column>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
@@ -160,6 +135,27 @@
    <property name="text">
     <string>Naver</string>
    </property>
+  </widget>
+  <widget class="QListWidget" name="listWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>91</y>
+     <width>256</width>
+     <height>791</height>
+    </rect>
+   </property>
+   <property name="alternatingRowColors">
+    <bool>true</bool>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <item>
+    <property name="text">
+     <string>asd</string>
+    </property>
+   </item>
   </widget>
  </widget>
  <resources/>
