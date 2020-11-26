@@ -26,32 +26,38 @@ class WindowClass(QMainWindow, form_class):
         self.setupUi(self)
         self.searchBtn.clicked.connect(self.searchBtnFunction)
         self.listWidget.itemClicked.connect(self.chkItemClicked)
+        self.pushButton.clicked.connect(self.pushButtonClicked)
+
+    def pushButtonClicked(self):
+        webbrowser.open(self.cur_article["doi_url"])
 
     def chkItemClicked(self):
-        try :
+        try:
             title = self.listWidget.currentItem().text()
             for article in self.article_list:
                 if article["title"] == title:
-                    cur_article = article
-            highlights = cur_article['higtlight']
-            abstract = cur_article['abstract']
-            keywords = cur_article['keywords']
-            lang = cur_article['lang']
-            tokens = cur_article['tokens']
-            sentences = cur_article['sentences']
+                    self.cur_article = article
+            self.authorName.setText(self.cur_article["author"])
+            highlights = self.cur_article["higtlight"]
+            abstract = self.cur_article["abstract"]
+            keywords = self.cur_article["keywords"]
+            lang = self.cur_article["lang"]
+            tokens = self.cur_article["tokens"]
+            sentences = self.cur_article["sentences"]
             get_wordcloud(tokens)
             wordcloud = QPixmap(PATH + "wordcloud.png")
             wordcloud = wordcloud.scaledToHeight(400)  # 사이즈가 조정
             self.label.setPixmap(wordcloud)
-            # if lang == "eng":
-            #     get_NG(sentences, lang)
-            #     netgraph = QPixmap(PATH + "networkgraph.png")
-            #     netgraph = netgraph.scaledToHeight(400)  # 사이즈가 조정
-            #     self.label_2.setPixmap(netgraph)
-            # else:
-            #     pass
+            if lang == "eng":
+                get_NG(sentences, lang)
+                netgraph = QPixmap(PATH + "networkgraph.png")
+                netgraph = netgraph.scaledToHeight(400)  # 사이즈가 조정
+                self.label_2.setPixmap(netgraph)
+            else:
+                pass
         except Exception as e:
             print(f"error : {e}")
+
     def searchBtnFunction(self):
         search_keyword = self.keywordInput.text()
         if self.radioButton_1.isChecked():
@@ -65,40 +71,6 @@ class WindowClass(QMainWindow, form_class):
         for row_num in range(len(self.article_list)):
             self.listWidget.addItem(self.article_list[row_num]["title"])
         return
-
-
-# def get_data():
-#     headers = {
-#         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-#         'accept-encoding': 'gzip',
-#         'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-#         'cache-control': 'no-cache',
-#         'pragma': 'no-cache',
-#         'sec-fetch-dest': 'document',
-#         'sec-fetch-mode': 'navigate',
-#         'sec-fetch-site': 'none',
-#         'sec-fetch-user': '?1',
-#         'upgrade-insecure-requests': '1',
-#         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36',
-#     }
-#     response = requests.get(
-#         'https://www.sciencedirect.com/science/article/abs/pii/S0926337317301005', headers=headers)
-#     soup = bs(response.text, 'html.parser')
-#
-#     highlights = soup.find('div', {'id': 'abs0010'}).text.replace(
-#         '•', ' ').replace('\xa0', '')
-#     abstract = soup.find('div', {'id': 'abs0015'}).text.replace('\xa0', '')
-#     keywords = soup.find_all('div', {'class': 'keyword'})
-#     keywords = [x.text.replace('\xa0', '') for x in keywords]
-#     keywords = ' '.join(keywords)
-#     lang = 'Eng'
-#     # text  = open('C:/Users/jlee/Downloads/미래로 가는 길.txt',encoding='euc-kr').read()
-#     # text.replace('\n','')
-#     # highlights = text
-#     # abstract = text
-#     # keywords = '안녕.그래'
-#     # lang = 'Kor'
-#     return highlights, abstract, keywords, lang
 
 
 if __name__ == "__main__":
