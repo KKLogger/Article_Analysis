@@ -29,39 +29,45 @@ from bs4 import BeautifulSoup as bs
 
 
 headers = {
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    'accept-encoding': 'gzip',
-    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'cache-control': 'no-cache',
-    'pragma': 'no-cache',
-    'sec-fetch-dest': 'document',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'none',
-    'sec-fetch-user': '?1',
-    'upgrade-insecure-requests': "1",
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36',
+    "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "accept-encoding": "gzip",
+    "accept-language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+    "cache-control": "no-cache",
+    "pragma": "no-cache",
+    "sec-fetch-dest": "document",
+    "sec-fetch-mode": "navigate",
+    "sec-fetch-site": "none",
+    "sec-fetch-user": "?1",
+    "upgrade-insecure-requests": "1",
+    "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36",
 }
 response = requests.get(
-    'https://www.sciencedirect.com/science/article/abs/pii/S0926337317301005', headers=headers)
-soup = bs(response.text, 'html.parser')
+    "https://www.sciencedirect.com/science/article/abs/pii/S0926337317301005",
+    headers=headers,
+)
+soup = bs(response.text, "html.parser")
 
-highlights = soup.find('div', {'id': 'abs0010'}).text.replace(
-    '•', '').replace('\xa0', '').replace('Highlights', '')
-abstract = soup.find('div', {'id': 'abs0015'}).text.replace('\xa0', '')
-keywords = soup.find_all('div', {'class': 'keyword'})
-keywords = [x.text.replace('\xa0', '') for x in keywords]
+highlights = (
+    soup.find("div", {"id": "abs0010"})
+    .text.replace("•", "")
+    .replace("\xa0", "")
+    .replace("Highlights", "")
+)
+abstract = soup.find("div", {"id": "abs0015"}).text.replace("\xa0", "")
+keywords = soup.find_all("div", {"class": "keyword"})
+keywords = [x.text.replace("\xa0", "") for x in keywords]
 keywords = " ".join(keywords)
 
 
 sentence = highlights + abstract
-sentences = sentence.split('.')
+sentences = sentence.split(".")
 sentences = [x.strip() for x in sentences]
-df = pd.DataFrame(sentences, columns=['content'])
+df = pd.DataFrame(sentences, columns=["content"])
 
 nan_value = float("NaN")
 # 결측값 제거
 df.replace(" ", nan_value, inplace=True)
-df.dropna(subset=['content'], inplace=True)
+df.dropna(subset=["content"], inplace=True)
 # 소문자로 통일
 # def lower_alpha(x): return re.sub(r"""\w*\d\w*""", ' ', x.lower())
 # df['content'] = df.content.map(lower_alpha)
@@ -71,7 +77,8 @@ df.dropna(subset=['content'], inplace=True)
 # df['content'] = df.content.map(punc_re)
 
 
-def num_re(x): return re.sub(r"""[0-9]""", '', x)
+def num_re(x):
+    return re.sub(r"""[0-9]""", "", x)
 
 
 def short_re(tokens):
@@ -82,21 +89,24 @@ def short_re(tokens):
     return result
 
 
-df['content'] = df.content.map(num_re)
+df["content"] = df.content.map(num_re)
 
 # 각 문장을 문장별로 토크나이징
 
-df['tokens'] = df.content.map(word_tokenize)
-df['tokens'] = df.tokens.map(short_re)
+df["tokens"] = df.content.map(word_tokenize)
+df["tokens"] = df.tokens.map(short_re)
 
 # remove stop words in tokens
-stop_words = stopwords.words('english')
-new_stop_words = ['said', 'say', 'The', 'the', 'mr']
+stop_words = stopwords.words("english")
+new_stop_words = ["said", "say", "The", "the", "mr"]
 stop_words.extend(new_stop_words)
-def stop_lambda(x): return [y for y in x if y not in stop_words]
 
 
-df['tokens_rmstop'] = df.tokens.apply(stop_lambda)
+def stop_lambda(x):
+    return [y for y in x if y not in stop_words]
+
+
+df["tokens_rmstop"] = df.tokens.apply(stop_lambda)
 
 # Perform basic lemmatization 단어를 기본형태로 변환 ex) 복수형->단수형
 # lemmatizer = WordNetLemmatizer()

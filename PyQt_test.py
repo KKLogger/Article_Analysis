@@ -3,16 +3,16 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from PyQt5.QtGui import QPixmap
 import os
-PATH = os.getcwd() + '\\article_analysis\\Projects\\'
+
+PATH = os.getcwd() + "\\article_analysis\\Projects\\"
 # UI파일 연결
 # 단, UI파일은 Python 코드 파일과 같은 디렉토리에 위치해야한다.
-form_class = uic.loadUiType(PATH+"test.ui")[0]
+form_class = uic.loadUiType(PATH + "test.ui")[0]
 
 # 화면을 띄우는데 사용되는 Class 선언
 
 
 class WindowClass(QMainWindow, form_class):
-
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -22,7 +22,7 @@ class WindowClass(QMainWindow, form_class):
 
         print("btn clicked")
         print(self.keywordInput.text())
-        pixmap = QPixmap(PATH+'wordcloud.jpg')
+        pixmap = QPixmap(PATH + "wordcloud.jpg")
         pixmap = pixmap.scaledToHeight(240)  # 사이즈가 조정
         self.label.setPixmap(pixmap)
         self.label_2.setPixmap(pixmap)
@@ -35,7 +35,7 @@ app = QApplication(sys.argv)
 # WindowClass의 인스턴스 생성
 myWindow = WindowClass()
 qPixmapVar = QPixmap()
-qPixmapVar.load(PATH+"test.jpg")
+qPixmapVar.load(PATH + "test.jpg")
 # 프로그램 화면을 보여주는 코드
 myWindow.show()
 
