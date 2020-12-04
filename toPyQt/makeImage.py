@@ -5,7 +5,8 @@ import pandas as pd
 import numpy as np
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
-from apyori import apriori
+from mlxtend.preprocessing import TransactionEncoder
+from mlxtend.frequent_patterns import apriori
 from myFunc import *
 import os
 import re
@@ -13,7 +14,8 @@ import matplotlib.font_manager as fm
 
 font_name = fm.FontProperties(fname="c:/Windows/Fonts/malgun.ttf").get_name()
 plt.rc("font", family=font_name)
-PATH = os.getcwd() + "\\"
+dirname = 'result'
+PATH = os.getcwd() + f"/{dirname}/"
 
 
 def get_wordcloud(tokens):
@@ -65,22 +67,22 @@ def get_NG(sentences, lang):
     df["tokens"] = df.tokens.map(short_re)
 
     # remove stop words in tokens
-    if lang == "eng":
-        stop_words = stopwords.words("english")
-        new_stop_words = ["said", "say", "The", "the", "mr"]
-        stop_words.extend(new_stop_words)
-    elif lang == "kor":
-        stop_words = get_kr_stopwords()
+    # if lang == "eng":
+    #     stop_words = stopwords.words("english")
+    #     new_stop_words = ["said", "say", "The", "the", "mr"]
+    #     stop_words.extend(new_stop_words)
+    # elif lang == "kor":
+    #     stop_words = get_kr_stopwords()
 
-    def stop_lambda(x):
-        return [y for y in x if y not in stop_words]
+    # def stop_lambda(x):
+    #     return [y for y in x if y not in stop_words]
 
-    df["remove_stopword"] = df.tokens.apply(stop_lambda)
+    # df["remove_stopword"] = df.tokens.apply(stop_lambda)
     # DF에서 빈 칸인 공백인 데이터 삭제
     df.dropna(inplace=True)
 
-    idx = df[df["remove_stopword"].apply(lambda x: len(x)) == 0].index
-    df = df.drop(idx)
+    # idx = df[df["remove_stopword"].apply(lambda x: len(x)) == 0].index
+    # df = df.drop(idx)
 
     # Perform basic lemmatization 단어를 기본형태로 변환 ex) 복수형->단수형
     # lemmatizer = WordNetLemmatizer()
@@ -99,19 +101,23 @@ def get_NG(sentences, lang):
     # RB: Adverb
 
     # http://blog.daum.net/geoscience/1408
-    # APory Alg
-
-    result = list(apriori(df["remove_stopword"]))
-
-    ap_df = pd.DataFrame(result)
-    ap_df["length"] = ap_df["items"].apply(lambda x: len(x))
+    # mlxtend Apriori http://rasbt.github.io/mlxtend/user_guide/frequent_patterns/apriori/
+    te = TransactionEncoder()
+    dataset = list(df["tokens"])
+    te_ary = te.fit(dataset).transform(dataset)
+    df = pd.DataFrame(te_ary,columns=te.columns_)
+    # result = apriori(list(df["tokens"]))
+    # result = list(result)
+    ap_df = apriori(df,use_colnames=True)
+    # print(type(ap_df)) ## DF
+    ap_df["length"] = ap_df["itemsets"].apply(lambda x: len(x))
     ap_df = ap_df[(ap_df["length"] == 2) & (ap_df["support"] >= 0.01)].sort_values(
         by="support", ascending=False
     )
-
+    print(ap_df)
     # 그래프 그리기
     G = nx.Graph()
-    ar = ap_df["items"]
+    ar = ap_df["itemsets"]
     G.add_edges_from(ar)
 
     pr = nx.pagerank(G)

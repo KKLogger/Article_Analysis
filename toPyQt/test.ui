@@ -16,8 +16,8 @@
   <widget class="QPushButton" name="searchBtn">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>40</y>
+     <x>190</x>
+     <y>65</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -29,9 +29,9 @@
   <widget class="QLineEdit" name="keywordInput">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>100</x>
      <y>10</y>
-     <width>113</width>
+     <width>171</width>
      <height>20</height>
     </rect>
    </property>
@@ -42,34 +42,34 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>40</y>
+     <x>310</x>
+     <y>60</y>
      <width>800</width>
      <height>450</height>
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>440</y>
+     <x>280</x>
+     <y>460</y>
      <width>800</width>
      <height>450</height>
     </rect>
    </property>
    <property name="text">
-    <string>아직 한국어는 지원하지 않습니다.</string>
+    <string/>
    </property>
   </widget>
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>310</x>
-     <y>0</y>
+     <x>560</x>
+     <y>10</y>
      <width>41</width>
      <height>51</height>
     </rect>
@@ -81,8 +81,8 @@
   <widget class="QLabel" name="authorName">
    <property name="geometry">
     <rect>
-     <x>360</x>
-     <y>0</y>
+     <x>610</x>
+     <y>10</y>
      <width>431</width>
      <height>51</height>
     </rect>
@@ -94,24 +94,11 @@
     <bool>false</bool>
    </property>
   </widget>
-  <widget class="QProgressBar" name="progressBar">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>10</y>
-     <width>118</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="value">
-    <number>24</number>
-   </property>
-  </widget>
   <widget class="QRadioButton" name="radioButton_1">
    <property name="geometry">
     <rect>
      <x>110</x>
-     <y>40</y>
+     <y>70</y>
      <width>90</width>
      <height>16</height>
     </rect>
@@ -129,8 +116,8 @@
   <widget class="QRadioButton" name="radioButton_2">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>60</y>
+     <x>20</x>
+     <y>70</y>
      <width>90</width>
      <height>16</height>
     </rect>
@@ -142,8 +129,8 @@
   <widget class="QListWidget" name="listWidget">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>91</y>
+     <x>20</x>
+     <y>110</y>
      <width>256</width>
      <height>791</height>
     </rect>
@@ -158,14 +145,53 @@
   <widget class="QPushButton" name="pushButton">
    <property name="geometry">
     <rect>
-     <x>1030</x>
-     <y>10</y>
+     <x>310</x>
+     <y>20</y>
      <width>75</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
     <string>논문 보기</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="numInput">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>40</y>
+     <width>171</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_3">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>10</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>키워드</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>19</x>
+     <y>40</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>논문 최대 개수</string>
    </property>
   </widget>
  </widget>
