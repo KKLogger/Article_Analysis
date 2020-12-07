@@ -29,7 +29,7 @@ def get_wordcloud(tokens):
         max_words=100,
     ).generate(" ".join(tokens))
     plt.figure(figsize=(16, 9))
-    plt.imshow(wordcloud, interpolation="lanczos")
+    plt.imshow(wordcloud, interpolation="lanczos" )
     plt.axis("off")
     plt.savefig(PATH + "wordcloud.png", bbox_inches="tight")
 

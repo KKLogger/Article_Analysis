@@ -6,17 +6,63 @@ import pandas as pd
 import csv
 import os
 import random
-from uuid import uuid4
 from datetime import datetime
 import logging
 
 logging.basicConfig(filename='parser.log', level=logging.DEBUG)
 
-def _pdf_parser(site, keyword):
+def _doi_crawl(site, page):
     '''
     academic_naver_list 와 scholar-re 에서 수집된 논문 url 과 기타 데이터를 가지고 데이터 수집
-    :param site:
-    :param keyword:
+    :param site:naver or scholar
+    :param page: {'rank': 3, 'search_url': 'https://academic.naver.com/article.naver?doc_id=512219000',
+    'search_keyword': 'hcho',
+    'author': 'Bingyang Bai, Junhua Li',
+    'affiliation': '',
+    'doi': 'http://dx.doi.org/10.1021/cs5006663',
+    'keyword': '',
+    'doi_url': 'https://pubs.acs.org/doi/10.1021/cs5006663'}
+    '''
+    now = datetime.now()
+    now = str(now)[:10].replace('-', '')
+    text = re.compile('[^ㄱ-ㅣ가-힣a-zA-Z0-9]+')
+    keyword = page.get('search_keyword')
+    file_name = text.sub('', keyword)
+
+    rank = page.get('rank')
+    search_url = page.get('search_url')
+    search_keyword = page.get('search_keyword')
+    author = page.get('author')
+    affiliation = page.get('affiliation')
+    doi = page.get('doi')
+    keyword = page.get('keyword')
+    doi_url = page.get('doi_url')
+
+    if doi_url is not None:
+        time.sleep(random.uniform(1, 3))
+        page = {
+            'rank': rank,
+            'search_url': search_url,
+            'search_keyword': search_keyword,
+            'author': author,
+            'affiliation': affiliation,
+            'doi': doi,
+            'keyword': keyword,
+            'doi_url': doi_url,
+        }
+        try:
+            _url(page, now, file_name, site)
+        except Exception as e:
+            logging.error(f'error : {e}')
+
+    logging.info('finished doi crawl..')
+
+
+def _save_parser(site, keyword):
+    '''
+    중단후 시작할때 이미 저장된 file을 읽어오는것
+    :param site : naver or scholar
+    :param keyword : hcho
     :return:
     '''
     now = datetime.now()
@@ -54,6 +100,8 @@ def _pdf_parser(site, keyword):
             _url(page, now, file_name, site)
         except Exception as e:
             logging.error(f'error : {e}')
+
+        logging.info('(_save_parser) finished parsing data...')
 
 
 def _url(page, now, file_name, site):
@@ -128,7 +176,7 @@ def _koreascience(page):
     :return:
     '''
     url = page.get('doi_url')
-    uuid = ''
+    # uuid = ''
     search_url = page.get('search_url')
     search_site = ''
     if 'https://academic.naver.com' in search_url:
@@ -174,7 +222,7 @@ def _acpcopernicus(page):
 
     board_url = 'https://acp.copernicus.org'
     url = page.get('doi_url')
-    uuid = ''
+    # uuid = ''
     search_url = page.get('search_url')
     search_site = ''
     if 'https://academic.naver.com' in search_url:
@@ -214,7 +262,7 @@ def _acpcopernicus(page):
 def _amtcopernicus(page):
     board_url = 'https://amt.copernicus.org'
     url = page.get('doi_url')
-    uuid = ''
+    # uuid = ''
     search_url = page.get('search_url')
     search_site = ''
     if 'https://academic.naver.com' in search_url:
@@ -256,7 +304,7 @@ def _mdpi(page):
     '''
     board_url = 'https://www.mdpi.com'
     url = page.get('doi_url')
-    uuid = ''
+    # uuid = ''
     search_url = page.get('search_url')
     search_site = ''
     if 'https://academic.naver.com' in search_url:
@@ -294,7 +342,7 @@ def _mdpi(page):
 def _joie(page):
     board_url = 'http://fulltext.koreascholar.com/Service/Download.aspx?pdf='
     url = page.get('doi_url')
-    uuid = ''
+    # uuid = ''
     search_url = page.get('search_url')
     search_site = ''
     if 'https://academic.naver.com' in search_url:
@@ -486,7 +534,6 @@ def _csv_save(data, now, file_name, site):
     try:
         result = []
         result.append(data)
-        print(result)
         dataframe = pd.DataFrame(result)
         if not os.path.exists(f'result/{site}_{now}_{file_name}.csv'):
             dataframe.to_csv(f"result/{site}_{now}_{file_name}.csv", mode='a', encoding='utf-8-sig', sep=",",
@@ -504,7 +551,6 @@ def _txt_save(data, now, file_name, site):
     try:
         result = []
         result.append(data)
-        print(result)
         dataframe = pd.DataFrame(result)
         if not os.path.exists(f'result/{site}_{now}_{file_name}.txt'):
             dataframe.to_csv(f"result/{site}_{now}_{file_name}.txt", index=False, sep=",")

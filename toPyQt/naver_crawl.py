@@ -11,28 +11,34 @@ import logging
 from tqdm import tqdm
 from datetime import datetime
 import list_parser
+'''
+_crawl(검색 단어, 검색 갯수 제한) -> 
+_urlList() 키워드 검색하여 보여주는 url list수집 ->
+_parser(url_list) -> url에 접근하여 논문이 있는 url 및 기타 정보 수집
+academic_parser._doi_crawl('naver', page) -> 논문이 있는 site에 접근하여 원하는 정보 수집
+'''
 
 logging.basicConfig(filename='naver_list.log', level=logging.DEBUG)
 
-def _crawl(keyword,max_num):
+def _crawl(keyword, search_num = None):
     '''
     검색 keyword를 입력하여 해당 keyword를 가지고 list 수집하는 함수
     :param keyword: hcho
+    :param search_num: None or 100 # 검색할 논문 limit 수
     :return: csv and txt file svae
     '''
     page = 1
     url = f'https://academic.naver.com/search.naver?query={keyword}&searchType=1&field=0&docType=1&page={page}'
     soup = _fetch(url)
     total = _total(soup)
-    if total > max_num :
-        total = max_num
     if total > 2000:
         total = 2000
+    if search_num is not None:
+        total = search_num
+
     logging.info(f'검색어 : {keyword}')
     logging.info(f'논문 수 : {total} // 최대 2000개 까지 수집 가능합니다.')
-    url_list = _urlList(keyword, total)
-    _parser(url_list, keyword)
-    list_parser._pdf_parser('naver', keyword)
+    _urlList(keyword, total)
 
 def _fetch(url):
     time.sleep(random.uniform(2, 3))
@@ -66,7 +72,7 @@ def _total(soup):
 
 def _urlList(keyword, total):
     '''
-    keyword 검색시 보여지는 결과물, 최대 2000개 까지 link 수집하는 부분분,
+    keyword 검색시 보여지는 결과물, 최대 2000개 까지 link 수집하는 부분분
 
    :param keyword: hcho
     :param total: 2000
@@ -76,36 +82,37 @@ def _urlList(keyword, total):
         'catalytic activity',
         'url': 'https://academic.naver.com/article.naver?doc_id=429211580'} ...]
     '''
-    result = []
     start_num = _file_check(keyword)
     if start_num != 1:
-        start_page = start_num // 10
+        start_page = (start_num+9) // 10
     else:
         start_page = 1
 
     with tqdm() as pbar:
-        for page in range(start_page, (total // 10 + 1)):
+        for page in range(start_page, (total + 9) // 10 + 1):
+            result = []
             url = f'https://academic.naver.com/search.naver?query={keyword}&searchType=1&field=0&docType=1&page={page}'
-
             soup = _fetch(url)
             board_url = 'https://academic.naver.com'
-            rank = (page-1)*10 + 1
-            if start_num > rank:
-                continue
+            rank = (page-1)*10
             for i in soup.select('div.ui_listing > div > ul > li'):
-
+                rank += 1
+                if start_num >= rank or rank > total:
+                    continue
                 url = board_url + i.select_one('h4 > a')['href']
                 title = i.select_one('h4 > a').get_text().strip()
                 page = {
                     'rank': rank,
                     'title': title,
                     'url': url,
+                    'search_keyword' : keyword
                 }
-                rank += 1
                 result.append(page)
-
+            _parser(result)
             pbar.update()
-    return result
+            logging.info('(urlList) append article...')
+    logging.info('finished collect url..')
+
 
 def _file_check(keyword) -> int:
     '''
@@ -126,10 +133,15 @@ def _file_check(keyword) -> int:
 
 
 
-def _parser(url_list, search_keyword):
+def _parser(url_list):
     '''
     keyword 검색시 보여지는 url를 가지고 하나씩 접근하여 논문 pdf를 제공하는 논문 사이트 url 및 기타 데이터 수집
-    :param url_list:
+    :param url_list: [{'rank': 2, 'title': 'Controllable synthesis and HCHO-sensing properties of In2O3 micro/nanotubes with different diameters',
+    'url': 'https://academic.naver.com/article.naver?doc_id=426632022',
+    'search_keyword': 'hcho'},
+    {'rank': 3, 'title': 'Positive Effects of K + Ions on Three-Dimensional Mesoporous Ag/Co 3 O 4 Catalyst for HCHO Oxidation',
+    'url': 'https://academic.naver.com/article.naver?doc_id=512219000', 'search_keyword': 'hcho'},
+
     :return:
     '''
 
@@ -137,6 +149,7 @@ def _parser(url_list, search_keyword):
         try:
             url = i.get('url')
             rank = i.get('rank')
+            search_keyword = i.get('search_keyword')
             soup = _fetch(url)
             key = soup.select('div.ui_listdetail.type2 > dl > dt')
             value = soup.select('div.ui_listdetail.type2 > dl > dd')
@@ -171,9 +184,10 @@ def _parser(url_list, search_keyword):
                 'keyword' : keyword,
                 'doi_url' : doi_url,
             }
-            logging.info(page)
+            logging.info(str(page))
             _csv_save(page)
             _txt_save(page)
+            list_parser._doi_crawl('naver', page)
         except Exception as e:
             logging.warning(f'error : {e}')
 
@@ -208,7 +222,7 @@ def _csv_save(data):
     else:
         dataframe.to_csv(f"naver_{now}_{file_name}.csv", mode='a', encoding='utf-8-sig', sep=",",
                          header=False, index=False)
-
+    pass
 
 def _txt_save(data):
     '''
@@ -228,18 +242,7 @@ def _txt_save(data):
     keyword = data.get('search_keyword')
     text = re.compile('[^ㄱ-ㅣ가-힣a-zA-Z0-9]+')
     file_name = text.sub('', keyword)
-
     if not os.path.exists(f'naver_{now}_{file_name}.txt'):
         dataframe.to_csv(f"naver_{now}_{file_name}.txt", index=False, sep=",")
     else:
         dataframe.to_csv(f'naver_{now}_{file_name}.txt', mode='a+', index=False, header=None, sep=",")
-
-
-
-
-
-if __name__ == '__main__':
-
-    s_time = datetime.now()
-    _crawl('day',200)
-    print(datetime.now() - s_time)

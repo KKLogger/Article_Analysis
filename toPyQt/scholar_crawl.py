@@ -6,25 +6,29 @@ from datetime import datetime
 import list_parser
 import logging
 import re
-
+'''
+scholarly api를 사용하여 google scholar data 수집, google 차단이 심함
+scholarly api 
+'''
 
 logging.basicConfig(filename='scholar_list.log', level=logging.DEBUG)
 
-def _crawl(keyword,max_num):
+def _crawl(keyword, search_num = None):
     '''
     scholarly api 를 사용하여 데이터 수집,
     차단 심함, 중간부터 재수집 불가능, 처음부터 수집만 가능함
     api로 가져올수 있는 data는 최대한 수집하고 naver_list와 포맷 맞춤
     수집된 데이터를 csv로 저장
-    :param keyword:
+    :param keyword: 검색단어
+    :search_num : 검색할 논문 갯수
     :return:
     '''
     search_query = scholarly.search_pubs(keyword)
-    if max_num < 1000:
-        total = max_num
-    else:
-        total = 1000
-    for i in range(total):
+
+    if search_num is None:
+        search_num = 1000
+
+    for i in range(int(search_num)):
         try:
             time.sleep(3)
             data = next(search_query)
@@ -43,13 +47,11 @@ def _crawl(keyword,max_num):
             logging.info(page)
             _csv_save(page)
             _txt_save(page)
-
+            list_parser._doi_crawl('scholar', page)
         except Exception as e:
             logging.info(f'search Keyword : {keyword}')
             logging.error(f'Error : {e}')
             break
-
-    list_parser._pdf_parser('scholar', keyword)
 
 
 def _csv_save(data):
@@ -101,11 +103,3 @@ def _txt_save(data):
         dataframe.to_csv(f"scholar_{now}_{file_name}.txt", index=False, sep=",")
     else:
         dataframe.to_csv(f'scholar_{now}_{file_name}.txt', mode='a+', index=False, header=None, sep=",")
-
-
-
-
-if __name__ == '__main__':
-    s_time = datetime.now()
-    _crawl('dense',200)
-    print(datetime.now() - s_time)

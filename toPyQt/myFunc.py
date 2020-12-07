@@ -1,7 +1,7 @@
 import re
 import collections
 from nltk.corpus import stopwords
-from tensorflow.keras.preprocessing.text import text_to_word_sequence
+from nltk.tokenize import word_tokenize
 from nltk.tokenize import sent_tokenize
 from konlpy.tag import Hannanum
 from konlpy.tag import Kkma
@@ -12,7 +12,10 @@ import scholar_crawl
 import naver_crawl
 import datetime
 import os
+
 PATH = os.getcwd() + '/'
+
+
 def get_sentences(highlights, abstract):
     sentence = highlights + abstract
     sentences = sent_tokenize(sentence)
@@ -48,7 +51,7 @@ def get_tokens(string, lang):
         # word_tokenize(highlights)
         # TreebankWordTokenizer().tokenize(highlights)
         # WordPunctTokenizer().tokenize(highlights)
-        raw_tokens = text_to_word_sequence(string)
+        raw_tokens = word_tokenize(string)
         for token in raw_tokens:
             if token not in stopwords.words("english"):
                 if len(token) > 2:
@@ -68,7 +71,7 @@ def get_tokens(string, lang):
 
 def get_list(keywords, crawl_site,max_num):
     """
-    >>> rank 정렬, token과 sentences 미리 구함
+         rank 정렬, token과 sentences 미리 구함
     """
     now = datetime.datetime.now()
     now = str(now)[:10].replace("-", "")
@@ -120,6 +123,9 @@ def get_list(keywords, crawl_site,max_num):
         item["data"] = (
             item["abstract"] + "," + item["highlight"] + "," + item["keywords"]
         )
-        item["tokens"] = get_tokens(item["data"], item["lang"])
-        item["sentences"] = get_sentences(item["highlight"], item["abstract"])
+        try:
+            item["tokens"] = get_tokens(item["data"], item["lang"])
+            item["sentences"] = get_sentences(item["highlight"], item["abstract"])
+        except Exception as e :
+            print(f'{e}')
     return result

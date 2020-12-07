@@ -1,0 +1,25 @@
+INFO:root:검색어 : car
+INFO:root:논문 수 : 8 // 최대 2000개 까지 수집 가능합니다.
+INFO:root:{'rank': 2, 'search_url': 'https://academic.naver.com/article.naver?doc_id=344736760', 'search_keyword': 'car', 'author': 'Marco L. Davila, Isabelle Riviere, Xiuyan Wang, Shirley Bartido, Jae Park, Kevin Curran, Stephen S. Chung, Jolanta Stefanski, Oriana Borquez-Ojeda, Malgorzata Olszewska, Jinrong Qu, Teresa Wasielewska, Qing He, Mitsu Fink, Himaly Shinglot, Maher Youssif, Mark Satter, Yongzeng Wang, James Hosey, Hilda Quintanilla, Elizabeth Halton, Yvette Bernal, Diana C. G. Bouhassira, Maria E. Arcila, Mithat Gonen, Gail J. Roboz, Peter Maslak, Dan Douer, Mark G. Frattini, Sergio Giralt, Michel Sadelain, Renier Brentjens', 'affiliation': '', 'doi': 'http://dx.doi.org/10.1126/scitranslmed.3008226', 'keyword': 'Adolescent, Adult, Cell Transplantation, Female, Humans, Immunotherapy, Leukemia, B-Cell, therapy, Male, Middle Aged, T-Lymphocytes, immunology, Young Adult', 'doi_url': 'https://stm.sciencemag.org/content/6/224/224ra25'}
+INFO:root:검색어 : band
+INFO:root:논문 수 : 10 // 최대 2000개 까지 수집 가능합니다.
+INFO:root:{'rank': 2, 'search_url': 'https://academic.naver.com/article.naver?doc_id=337361595', 'search_keyword': 'band', 'author': 'Melinda Y Han, Barbaros Ozyilmaz, Yuanbo Zhang, Philip Kim', 'affiliation': '', 'doi': 'http://dx.doi.org/10.1103/PhysRevLett.98.206805', 'keyword': '', 'doi_url': 'https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.98.206805'}
+INFO:root:finished doi crawl..
+INFO:root:{'rank': 3, 'search_url': 'https://academic.naver.com/article.naver?doc_id=294897485', 'search_keyword': 'band', 'author': 'Bundgaard Eva, Krebs Frederik C', 'affiliation': '', 'doi': 'http://dx.doi.org/10.1016/j.solmat.2007.01.015', 'keyword': 'Low band gap polymers, Synthesis, Organic photovoltaics (OPV)', 'doi_url': 'https://linkinghub.elsevier.com/retrieve/pii/S0927024807000451'}
+INFO:root:finished doi crawl..
+INFO:root:{'rank': 4, 'search_url': 'https://academic.naver.com/article.naver?doc_id=547788363', 'search_keyword': 'band', 'author': 'J. M. D. Coey, M. Venkatesan, C. B. Fitzgerald', 'affiliation': '', 'doi': 'http://dx.doi.org/10.1038/nmat1310', 'keyword': '', 'doi_url': 'https://www.nature.com/articles/nmat1310'}
+INFO:root:finished doi crawl..
+INFO:root:finished doi crawl..
+INFO:root:{'rank': 6, 'search_url': 'https://academic.naver.com/article.naver?doc_id=438421605', 'search_keyword': 'band', 'author': 'Jian Mi, Yasutake Takahashi', 'affiliation': '', 'doi': 'http://dx.doi.org/10.3390/s16081200', 'keyword': '', 'doi_url': 'https://www.mdpi.com/1424-8220/16/8/1200'}
+ERROR:root:error : 'str' object has no attribute 'get_text'
+INFO:root:finished doi crawl..
+INFO:root:{'rank': 7, 'search_url': 'https://academic.naver.com/article.naver?doc_id=335193320', 'search_keyword': 'band', 'author': "Michael J. O'Connell, Sergei M. Bachilo, Chad B. Huffman, Valerie C. Moore, Michael S. Strano, Erik H. Haroz, Kristy L. Rialon, Peter J. Boul, William H. Noon, Carter Kittrell, Jianpeng Ma, Robert H. Hauge, R. Bruce Weisman, Richard E. Smalley", 'affiliation': '', 'doi': 'http://dx.doi.org/10.1126/science.1072631', 'keyword': '', 'doi_url': 'https://science.sciencemag.org/content/297/5581/593'}
+INFO:root:finished doi crawl..
+INFO:root:{'rank': 8, 'search_url': 'https://academic.naver.com/article.naver?doc_id=596091511', 'search_keyword': 'band', 'author': 'Huifeng Yao, Yong Cui, Runnan Yu, Bowei Gao, Hao Zhang, Jianhui Hou', 'affiliation': '', 'doi': 'http://dx.doi.org/10.1002/anie.201610944', 'keyword': 'fluorination, intramolecular charge transfer, non-fullerene acceptors, organic solar cells, ultra-narrow band gap', 'doi_url': 'https://onlinelibrary.wiley.com/doi/abs/10.1002/anie.201610944'}
+INFO:root:finished doi crawl..
+INFO:root:{'rank': 9, 'search_url': 'https://academic.naver.com/article.naver?doc_id=343866963', 'search_keyword': 'band', 'author': 'Fabien Tran, Peter Blaha', 'affiliation': '', 'doi': 'http://dx.doi.org/10.1103/PhysRevLett.102.226401', 'keyword': '', 'doi_url': 'https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.102.226401'}
+INFO:root:finished doi crawl..
+INFO:root:{'rank': 10, 'search_url': 'https://academic.naver.com/article.naver?doc_id=344997892', 'search_keyword': 'band', 'author': 'Mikhail Lapine, Ilya Shadrivov, Yuri Kivshar', 'affiliation': '', 'doi': 'http://dx.doi.org/10.1038/srep00412', 'keyword': 'Computer Simulation, Equipment Design, Manufactured Materials, standards, Materials Testing, Nonlinear Dynamics, Optical Devices, Refractometry, instrumentation, methods, Reproducibility of Results, Signal Processing, Computer-Assisted', 'doi_url': 'https://www.nature.com/articles/srep00412'}
+INFO:root:finished doi crawl..
+INFO:root:(urlList) append article...
+INFO:root:finished collect url..
