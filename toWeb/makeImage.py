@@ -14,7 +14,7 @@ import matplotlib.font_manager as fm
 
 font_name = fm.FontProperties(fname="c:/Windows/Fonts/malgun.ttf").get_name()
 plt.rc("font", family=font_name)
-dirname = 'result'
+dirname = "result"
 PATH = os.getcwd() + f"/{dirname}/"
 
 
@@ -34,7 +34,7 @@ def get_wordcloud(tokens):
     plt.savefig(PATH + "wordcloud.png", bbox_inches="tight")
 
 
-def get_NG(sentences, lang,top_token):
+def get_NG(sentences, lang, top_token):
 
     df = pd.DataFrame(sentences, columns=["content"])
     nan_value = float("NaN")
@@ -42,12 +42,16 @@ def get_NG(sentences, lang,top_token):
     df.replace(" ", nan_value, inplace=True)
     df.dropna(subset=["content"], inplace=True)
     # 소문자로 통일
-    def lower_alpha(x): return re.sub(r"""\w*\d\w*""", ' ', x.lower())
-    df['content'] = df.content.map(lower_alpha)
+    def lower_alpha(x):
+        return re.sub(r"""\w*\d\w*""", " ", x.lower())
+
+    df["content"] = df.content.map(lower_alpha)
 
     # 특수문자 제거
-    def punc_re(x): return re.sub(r"""[\.,—“”’:;#$?%!&()_'`*""˜{|}~-]""", ' ', x)
-    df['content'] = df.content.map(punc_re)
+    def punc_re(x):
+        return re.sub(r"""[\.,—“”’:;#$?%!&()_'`*""˜{|}~-]""", " ", x)
+
+    df["content"] = df.content.map(punc_re)
 
     def num_re(x):
         return re.sub(r"""[0-9]""", "", x)
@@ -56,10 +60,10 @@ def get_NG(sentences, lang,top_token):
         result = list()
 
         for token in tokens:
-            token = token.replace('‘','')
-            token = token.replace('”', '')
-            token = token.replace('“', '')
-            token = token.replace('×', '').strip()
+            token = token.replace("‘", "")
+            token = token.replace("”", "")
+            token = token.replace("“", "")
+            token = token.replace("×", "").strip()
             if len(token) > 2:
                 if token in top_token:
                     result.append(token)
@@ -111,21 +115,20 @@ def get_NG(sentences, lang,top_token):
 
     te = TransactionEncoder()
     dataset = list(df["tokens"])
+
     te_ary = te.fit(dataset).transform(dataset)
-    df = pd.DataFrame(te_ary,columns=te.columns_)
-    print(df)
-    df.to_csv(PATH + "temp.csv",encoding='utf-8-sig')
-    # result = apriori(list(df["tokens"]))
-    # result = list(result)
-    ap_df = apriori(df,use_colnames=True)
-    print(ap_df)
-    # print(type(ap_df)) ## DF
+    df = pd.DataFrame(te_ary, columns=te.columns_)
+    df.to_csv(PATH + "temp.csv", encoding="utf-8-sig")
+    ap_df = apriori(df, use_colnames=True)
+
     ap_df["length"] = ap_df["itemsets"].apply(lambda x: len(x))
     ap_df = ap_df[(ap_df["length"] == 2) & (ap_df["support"] >= 0.01)].sort_values(
         by="support", ascending=False
     )
-
-    input()
+    class MyError(Exception):
+        print('알고리즘 문제')
+    if ap_df.empty:
+        raise MyError()
     # 그래프 그리기
     G = nx.Graph()
     ar = ap_df["itemsets"]
@@ -136,7 +139,7 @@ def get_NG(sentences, lang,top_token):
     nsize = np.array([v for v in pr.values()])
     if max(nsize) == min(nsize):
         nsize = 7000 * nsize
-    else :
+    else:
         nsize = 7000 * ((nsize - min(nsize)) / (max(nsize) - min(nsize)))
     # Graph Layout
     # pos = nx.planar_layout(G)

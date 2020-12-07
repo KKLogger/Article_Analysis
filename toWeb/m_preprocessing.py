@@ -1,15 +1,13 @@
 import re
 import collections
 from nltk.corpus import stopwords
-from tensorflow.keras.preprocessing.text import text_to_word_sequence
+from nltk.tokenize import WordPunctTokenizer
 from nltk.tokenize import sent_tokenize
 from konlpy.tag import Hannanum
 from konlpy.tag import Kkma
 from konlpy.tag import Okt
 import requests
 import pandas as pd
-import scholar_crawl
-import naver_crawl
 import datetime
 
 
@@ -48,7 +46,7 @@ def get_tokens(string, lang):
         # word_tokenize(highlights)
         # TreebankWordTokenizer().tokenize(highlights)
         # WordPunctTokenizer().tokenize(highlights)
-        raw_tokens = text_to_word_sequence(string)
+        raw_tokens = WordPunctTokenizer().tokenize(string)
         for token in raw_tokens:
             if token not in stopwords.words("english"):
                 if len(token) > 2:
@@ -66,7 +64,7 @@ def get_tokens(string, lang):
     return tokens
 
 
-def get_list(keywords, crawl_site,max_num):
+def get_list(keywords, crawl_site, max_num):
     """
     >>> rank 정렬, token과 sentences 미리 구함
     """
@@ -78,34 +76,35 @@ def get_list(keywords, crawl_site,max_num):
     # df = pd.read_csv("eng_article_list.csv", encoding="euc-kr")
     # result = list(df.to_dict("records"))\
     error_dict = {
-        'rank' : 'none',
-        'search_url' : 'none',
-        'search_keyword': 'none',
-        'title': 'none',
-        'author': 'none',
-        'doi_url': 'none',
-        'keywords': 'none',
-        'abstract': 'none',
-        'pdf_name': 'none',
-        'higtlight': 'none',
-        'lang' : 'none'
-
+        "rank": "none",
+        "search_url": "none",
+        "search_keyword": "none",
+        "title": "none",
+        "author": "none",
+        "doi_url": "none",
+        "keywords": "none",
+        "abstract": "none",
+        "pdf_name": "none",
+        "higtlight": "none",
+        "lang": "none",
     }
     if crawl_site == "Naver":
-        try :
-            naver_crawl._crawl(keywords,max_num)
-            site = 'naver'
-            df = pd.read_csv(f'result/{site}_{now}_{file_name}.csv', encoding="utf-8-sig")
+        try:
+            naver_crawl._crawl(keywords, max_num)
+            site = "naver"
+            df = pd.read_csv(
+                f"result/{site}_{now}_{file_name}.csv", encoding="utf-8-sig"
+            )
         except Exception as e:
-            print(f'naver error : {e}')
+            print(f"naver error : {e}")
         df = df.sort_values(by="rank", ascending="False")
         result = list(df.to_dict("records"))
     else:
         try:
-            scholar_crawl._crawl(keywords,max_num)
+            scholar_crawl._crawl(keywords, max_num)
             df = pd.read_csv(f"{now}_{file_name}.csv", encoding="utf-8-sig")
-        except Exception as e :
-            print(f'google error : {e}')
+        except Exception as e:
+            print(f"google error : {e}")
         df = df.sort_values(by="rank", ascending="False")
         result = list(df.to_dict("records"))
 
@@ -123,10 +122,12 @@ def get_list(keywords, crawl_site,max_num):
         item["tokens"] = get_tokens(item["data"], item["lang"])
         item["sentences"] = get_sentences(item["highlight"] + item["abstract"])
     return result
+
+
 def get_top_token(tokens):
     count_tokens = collections.Counter(tokens)
     result = list()
     for token in tokens:
-        if count_tokens[token] > 10:
+        if count_tokens[token] > 0:
             result.append(token)
     return set(result)
