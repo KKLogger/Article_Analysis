@@ -49,6 +49,7 @@ def get_tokens(string, lang):
         raw_tokens = WordPunctTokenizer().tokenize(string)
         for token in raw_tokens:
             if token not in stopwords.words("english"):
+                token = token.lower()
                 if len(token) > 2:
                     tokens.append(token)
     elif lang == "kor":
