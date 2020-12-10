@@ -1,6 +1,6 @@
 import re
 import collections
-from nltk.corpus import stopwords
+from wordcloud import STOPWORDS
 from nltk.tokenize import WordPunctTokenizer
 from nltk.tokenize import sent_tokenize
 from konlpy.tag import Hannanum
@@ -48,7 +48,7 @@ def get_tokens(string, lang):
         # WordPunctTokenizer().tokenize(highlights)
         raw_tokens = WordPunctTokenizer().tokenize(string)
         for token in raw_tokens:
-            if token not in stopwords.words("english"):
+            if token not in STOPWORDS:
                 token = token.lower()
                 if len(token) > 2:
                     tokens.append(token)

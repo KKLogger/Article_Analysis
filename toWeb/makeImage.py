@@ -11,15 +11,20 @@ from m_preprocessing import *
 import os
 import re
 import matplotlib.font_manager as fm
-from toWeb import m_preprocessing
 import time
+import sys
+import json
+import collections
+from wordcloud import STOPWORDS
+import m_preprocessing
 
 font_name = fm.FontProperties(fname="c:/Windows/Fonts/malgun.ttf").get_name()
 plt.rc("font", family=font_name)
 dirname = "temp"
 PATH = os.getcwd() + f"/{dirname}/"
 
-def get_wordcloud(tokens,keywords,crawl_site):
+
+def get_wordcloud(tokens, keywords, crawl_site):
     # wordcloud = WordCloud(background_color='white').generate(" ".join(tokens))
     wordcloud = WordCloud(
         font_path="c:/Windows/Fonts/malgun.ttf",
@@ -37,7 +42,7 @@ def get_wordcloud(tokens,keywords,crawl_site):
     plt.close()
 
 
-def make_wordcloud(df,keywords,crawl_site):
+def make_wordcloud(df, keywords, crawl_site):
     dict_data = df.to_dict("records")
     all_tokens = list()
     for data in dict_data:
@@ -56,11 +61,10 @@ def make_wordcloud(df,keywords,crawl_site):
         # Token 저장
         tokens = m_preprocessing.get_tokens(string, lang)
         all_tokens = all_tokens + tokens
-    get_wordcloud(all_tokens,keywords,crawl_site)
+    get_wordcloud(all_tokens, keywords, crawl_site)
 
 
-def get_NG(sentences, lang, rank,crawl_site):
-    print(f"current rank : {rank} ")
+def get_NG(sentences, lang, rank, crawl_site):
     if lang == "eng":
         df = pd.DataFrame(sentences, columns=["content"])
         nan_value = float("NaN")
@@ -143,24 +147,23 @@ def get_NG(sentences, lang, rank,crawl_site):
 
         te_ary = te.fit(dataset).transform(dataset)
         df = pd.DataFrame(te_ary, columns=te.columns_)
-        print(df)
-        if len(df) > 2 :
-            print('start')
-            ap_df = apriori(df,use_colnames=True,low_memory=True)
-            print('end')
+        if len(df) > 2:
+            ap_df = apriori(df, use_colnames=True, low_memory=True)
             ap_df["length"] = ap_df["itemsets"].apply(lambda x: len(x))
             ap_df = ap_df[
                 (ap_df["length"] == 2) & (ap_df["support"] >= 0.01)
             ].sort_values(by="support", ascending=False)
-        else :
-            print("에러 이즈 초록이 한줄")
+        else:
             # make empty df
             ap_df = pd.DataFrame(columns=["a"])
         if ap_df.empty:
             error_img = plt.imread(PATH + "../graph_error.png")
             plt.imshow(error_img)
-            plt.axis('off')
-            plt.savefig(PATH + f"/network_graph/{crawl_site}_{rank}_networkgraph.png", bbox_inches="tight")
+            plt.axis("off")
+            plt.savefig(
+                PATH + f"/network_graph/{crawl_site}_{rank}_networkgraph.png",
+                bbox_inches="tight",
+            )
             pass
         else:
             # 그래프 그리기
@@ -169,7 +172,6 @@ def get_NG(sentences, lang, rank,crawl_site):
             G.add_edges_from(ar)
 
             pr = nx.pagerank(G)
-            print(pr)
             nsize = np.array([v for v in pr.values()])
             if max(nsize) == min(nsize):
                 nsize = 7000 * nsize
@@ -202,12 +204,15 @@ def get_NG(sentences, lang, rank,crawl_site):
                 font_family=font_name,
                 width=1.5,
             )
-            plt.savefig(PATH + f"/network_graph/{crawl_site}_{rank}_networkgraph.png", bbox_inches="tight")
+            plt.savefig(
+                PATH + f"/network_graph/{crawl_site}_{rank}_networkgraph.png",
+                bbox_inches="tight",
+            )
         plt.clf()
         plt.close()
 
 
-def make_networkgraph(df,crawl_site):
+def make_networkgraph(df, crawl_site):
     dict_data = df.to_dict("records")
     for data in dict_data:
         abstract = data["abstract"]
@@ -225,4 +230,62 @@ def make_networkgraph(df,crawl_site):
         # Sentence 저장
         sentences = m_preprocessing.get_sentences(string)
         rank = data["rank"]
-        get_NG(sentences, lang, rank,crawl_site)
+        get_NG(sentences, lang, rank, crawl_site)
+
+
+def make_top40(df, search_keyword, crawl_site):
+
+    dict_data = df.to_dict("records")
+    all_tokens = list()
+    raw_tokens = list()
+    for data in dict_data:
+        abstract = data["abstract"]
+        if type(abstract) is float:
+            abstract = " "
+        highlights = data["highlight"]
+        if type(highlights) is float:
+            highlights = " "
+
+        lang = data["lang"]
+        if type(lang) is float:
+            lang = " "
+        if lang == "kor":
+            continue
+        string = abstract + highlights
+        # Token 저장
+        tokens = m_preprocessing.get_tokens(string, lang)
+        data["tokens"] = tokens
+        raw_tokens = raw_tokens + tokens
+    for token in raw_tokens:
+        if token not in STOPWORDS:
+            all_tokens.append(token)
+    count_token = collections.Counter(all_tokens)
+    count_token = dict(count_token)
+
+    def f2(x):
+        return x[1]
+
+    count_token = sorted(count_token.items(), key=f2, reverse=True)
+    keyword_list = count_token[:40]
+    result = dict()
+    for keyword in keyword_list:
+        temp_dict = dict()
+        temp_list = list()
+        for data in dict_data:
+            if keyword[0] in data["tokens"]:
+                temp_list.append(data)
+        result[keyword[0]] = temp_list
+    with open(PATH + f"{crawl_site}_{search_keyword}.json", "w") as f:
+        json.dump(result, f)
+
+
+if __name__ == "__main__":
+    title = sys.argv[1]
+
+    search_keyword = title.split("_")[0]
+    crawl_site = title.split("_")[1].split(".")[0]
+
+    df = pd.read_csv(PATH + f"{search_keyword}_{crawl_site}.csv", encoding="utf-8-sig")
+    make_wordcloud(df, search_keyword, crawl_site)
+    make_top40(df, search_keyword, crawl_site)
+    make_networkgraph(df, crawl_site)
