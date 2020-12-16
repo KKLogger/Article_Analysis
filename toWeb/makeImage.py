@@ -65,6 +65,8 @@ def make_wordcloud(df, keywords, crawl_site):
 
 
 def get_NG(sentences, lang, rank, crawl_site):
+    if not os.path.exists(PATH+'network_graph'):
+        os.makedirs(PATH +'network_graph')
     if lang == "eng":
         df = pd.DataFrame(sentences, columns=["content"])
         nan_value = float("NaN")
@@ -269,11 +271,13 @@ def make_top40(df, search_keyword, crawl_site):
     keyword_list = count_token[:40]
     result = dict()
     for keyword in keyword_list:
-        temp_dict = dict()
         temp_list = list()
         for data in dict_data:
+            temp_dict = dict()
             if keyword[0] in data["tokens"]:
-                temp_list.append(data)
+                temp_dict['title'] = data['title']
+                temp_dict['doi_url'] = data['doi_url']
+                temp_list.append(temp_dict)
         result[keyword[0]] = temp_list
     with open(PATH + f"{crawl_site}_{search_keyword}.json", "w") as f:
         json.dump(result, f)
